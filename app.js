@@ -1,21 +1,30 @@
 const app = () => {
-    // ALERT MENU FUNCTIONALITY
-    const alertTrigger = document.querySelector('#notificationBell');
-    const alertContent = document.querySelector('#notificationContent');
-  
+    /// ALERT MENU FUNCTIONALITY ///
+// When a user clicks on the notification bell, 
+// It show popup a dropdown panel that shows me an empty list of notifications since I have none yet. 
+// When I click on the notification bell again, this dropdown panel is closed.
+    const alertTrigger = document.querySelector('#notificationBell');  //get the alert button
+    const alertContent = document.querySelector('#notificationContent'); //get the notification dropdown
     const toggleAlertContent = () => {
+      // toggle a class that display/remove the notification dropdown
+      // set the ariaExpanded of the alert button based on if the class is present or not
       alertContent.classList.toggle('notification-active');
-      alertTrigger.ariaExpanded = alertContent.classList.contains('store-menu-active') ? 'true' : 'false';
+      alertTrigger.ariaExpanded = alertContent.classList.contains('notification-active') ? 'true' : 'false';
     };
   
-    alertTrigger.addEventListener('click', toggleAlertContent);
+    alertTrigger.addEventListener('click', toggleAlertContent); // add an event listener to listen to the changes
   
-    // STORE-MENU FUNCTIONALITY
-    const storeMenuTrigger = document.querySelector('#storeMenu');
-    const storeMenuDropdown = document.querySelector('.store-menu-dropdown');
-    const allMenuItems = storeMenuDropdown.querySelectorAll('[role="menuitem"]');
-  
-    const handleMenuEscapeKeyPress = (e) => {
+    /// STORE-MENU FUNCTIONALITY ///
+// When a user clicks on the name of my store Davii Collections, 
+// or on my profile image placeholder DC on the far right of the topbar menu, 
+// I see a menu with a list of menu items as specified by the Figma design. 
+// Clicking on this button again closes the menu. 
+// Finally, when I click on any of the menu items in this menu, I am redirected toadmin.shopify.com.
+    const storeMenuTrigger = document.querySelector('#storeMenu'); //get the storemenu button
+    const storeMenuDropdown = document.querySelector('.store-menu-dropdown'); //get the storemenu dropdown
+    const allMenuItems = storeMenuDropdown.querySelectorAll('[role="menuitem"]'); //get all the list in the dropdown
+      
+    const handleMenuEscapeKeyPress = (e) => {  //function to use escape key to navigate out of storemenu dropdown
       if (e.key === 'Escape') {
         toggleMenu();
       }
@@ -27,14 +36,19 @@ const app = () => {
       }
     };
   
-    storeMenuTrigger.addEventListener('keyup', handleMenuEnterKeyPress);
+    storeMenuTrigger.addEventListener('keyup', handleMenuEnterKeyPress); //event that listens to the changes
   
+     // User should be able to focus on each list item using keyboard arrows
     const handleMenuItemArrowKeyPress = (e, menuItemIndex) => {
+      // get the last list item in the store menu dropdown
+      // get the first list element in the store menu dropdown
+      //get the next item in the store menu dropdown
+      // get the previous item in the store menu dropdown 
       const isLastMenuItem = menuItemIndex === allMenuItems.length - 1;
       const isFirstMenuItem = menuItemIndex === 0;
       const nextMenuItem = allMenuItems.item(menuItemIndex + 1);
       const prevMenuItem = allMenuItems.item(menuItemIndex - 1);
-  
+      //  Keyboard navigation using Right,left,Up and Down Key.
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (isLastMenuItem) {
           allMenuItems.item(0).focus();
@@ -52,13 +66,17 @@ const app = () => {
       }
     };
   
+    // On Enter Key press, function to navigate to a new link..
     const handleMenuItemEnterKeyPress = (e) => {
       if (e.key === 'Enter') {
         window.open('https://admin.shopify.com', '_blank');
       }
     };
-  
+  //  Open the store menu dropdown 
     const openStoreMenu = () => {
+      // set the aria Expanded of the menu button to true
+      // focus on the first list item once the drop-down opens
+      // perform actions using various event listeners
       storeMenuTrigger.ariaExpanded = 'true';
       allMenuItems.item(0).focus();
       storeMenuDropdown.addEventListener('keyup', handleMenuEscapeKeyPress);
@@ -68,49 +86,68 @@ const app = () => {
         menuItem.addEventListener('keyup', (e) => handleMenuItemEnterKeyPress(e));
       });
     };
-  
+   
+    //close the store menu dropdown
     const closeStoreMenu = () => {
+       // set the aria Expanded of the menu button to false
+       //remove the class that displays the store menu dropdown
+      // return focus back to the storemenu button
       storeMenuTrigger.ariaExpanded = 'false';
       storeMenuDropdown.classList.remove('store-menu-active');
       storeMenuTrigger.focus()
     };
   
+    // function to open or close the store menu based on if the aria Expanded is true
     const toggleMenu = () => {
+      // get the current boolean value of the storemenu button
+      //open or close the storemenu dropdown based on the boolean value
       const isExpanded = storeMenuTrigger.attributes['aria-expanded'].value === 'true';
       storeMenuDropdown.classList.toggle('store-menu-active');
       isExpanded ? closeStoreMenu() : openStoreMenu();
     };
 
-  
-    storeMenuTrigger.addEventListener('click', toggleMenu);
+    // Event Listener for Store Menu Trigger Button
+    storeMenuTrigger.addEventListener('click', toggleMenu); 
   
     // TRIAL POPUP FUNCTIONALITY
-    const trialPopupContainer = document.querySelector('#trialPopup');
-    const trialPopup = document.querySelector('#trialPopupContent');
-    const selectPlansButton = document.querySelector('.selectPlanButton');
-    const cancelButton = document.querySelector('.cancelButton');
+    const trialPopupContainer = document.querySelector('#trialPopup'); //get the trial popup wrapper
+    const trialPopup = document.querySelector('#trialPopupContent'); // get the trial pop up content
+    const selectPlansButton = document.querySelector('.selectPlanButton'); // get the select plans buttom
+    const cancelButton = document.querySelector('.cancelButton'); //get the cance; button
   
+    // add an event that opens a new link on click of the select plan button
     selectPlansButton.addEventListener('click', () => {
       window.open('https://shopify.com/pricing', '_blank');
     });
   
+    // add an event that closes the trial popup on click of the cancel button
     cancelButton.addEventListener('click', () => {
       trialPopupContainer.classList.add('hide-md','visibility')
       trialPopup.classList.add('popup-removed')
     });
   
-    // Checkbox
-    const HIDDEN_CLASS = 'hidden';
+    // CHECKBOX FUNCTIONALITY ///
+    const HIDDEN_CLASS = 'hidden';  //set a class variable to hide the svg element
     const MARK_AS_DONE_CLASS = 'checkbox-done';
     const checkboxButtons = document.querySelectorAll('#accordion-item-checkbox');
     const accordionItems = document.querySelectorAll('.accordionItem');
     let taskCount = 0;
   
-    const handleMarkAsDone = (checkboxButton, checkboxButtonStatus, notCompletedIcon, completedIcon, loadingSpinnerIcon, index) => {
+    // Mark a step as done
+    // Given a task checkbox is clicked
+    // When the user clicks on the checkbox
+    // Then the not completed icon should be hidden
+    // And the loading spinner icon should be shown
+    // And the checkbox button status should indicate loading
+    const handleMarkAsDone = (
+        checkboxButton, checkboxButtonStatus,
+       notCompletedIcon, completedIcon,
+        loadingSpinnerIcon, index
+        ) => {
       notCompletedIcon.classList.add(HIDDEN_CLASS);
       loadingSpinnerIcon.classList.remove(HIDDEN_CLASS);
       checkboxButtonStatus.ariaLabel = 'Loading, Please wait....';
-  
+        //  updates after 2 secs
       setTimeout(() => {
         loadingSpinnerIcon.classList.add(HIDDEN_CLASS);
         completedIcon.classList.remove(HIDDEN_CLASS);
@@ -124,11 +161,22 @@ const app = () => {
       }, 2000);
     };
   
-    const handleMarkAsNotDone = (checkboxButton, checkboxButtonStatus, notCompletedIcon, completedIcon, loadingSpinnerIcon, index) => {
+      // Mark a step as not done
+    // Given a completed task checkbox is clicked
+    // When the user clicks on the checkbox
+    // Then the completed icon should be hidden
+    // And the loading spinner icon should be shown
+    // And the checkbox button status should indicate loading
+    const handleMarkAsNotDone = (
+      checkboxButton, checkboxButtonStatus, 
+      notCompletedIcon, completedIcon,
+       loadingSpinnerIcon, index
+      ) => {
       completedIcon.classList.add(HIDDEN_CLASS);
       loadingSpinnerIcon.classList.remove(HIDDEN_CLASS);
       checkboxButtonStatus.ariaLabel = 'Loading, Please wait....';
-  
+
+          // updates after 2 seconds
       setTimeout(() => {
         loadingSpinnerIcon.classList.add(HIDDEN_CLASS);
         notCompletedIcon.classList.remove(HIDDEN_CLASS);
@@ -141,11 +189,37 @@ const app = () => {
       }, 2000);
     };
   
-    const handleMarkDoneOrNotDone = (checkboxButton, checkboxButtonStatus, notCompletedIcon, completedIcon, loadingSpinnerIcon, index) => {
+    // Toggle between marking a step as done or not done
+    // Given a step checkbox is clicked
+    // When the user clicks on the checkbox
+    // Then if the checkbox is marked as done
+    //   - Mark the step as not done
+    // Else
+    //   - Mark the step as done
+    const handleMarkDoneOrNotDone = (
+      checkboxButton, checkboxButtonStatus, 
+      notCompletedIcon, completedIcon,
+       loadingSpinnerIcon, index
+       ) => {
+        //checks if the mark as done class is present on the checkbox button
+        // toggle between marking a step as done or not based on the class presence
       const markedAsDone = checkboxButton.classList.contains(MARK_AS_DONE_CLASS);
-      markedAsDone ? handleMarkAsNotDone(checkboxButton, checkboxButtonStatus, notCompletedIcon, completedIcon, loadingSpinnerIcon, index) : handleMarkAsDone(checkboxButton, checkboxButtonStatus, notCompletedIcon, completedIcon, loadingSpinnerIcon, index);
+      markedAsDone ? handleMarkAsNotDone(
+        checkboxButton, checkboxButtonStatus, 
+        notCompletedIcon, completedIcon, 
+        loadingSpinnerIcon, index
+        ) : handleMarkAsDone(
+          checkboxButton, checkboxButtonStatus,
+           notCompletedIcon, completedIcon, 
+           loadingSpinnerIcon, index);
     };
   
+    
+    //Update the progress status
+    // Given a task count and progress bar
+    // When the progress status is updated
+    // Then the task count status text should be updated
+    // And the progress bar value should be adjusted accordingly
     const updateProgressStatus = () => {
       const taskCountStatus = document.querySelector('.task-count');
       const progressBar = document.querySelector('#progressBar');
@@ -160,11 +234,19 @@ const app = () => {
       const checkboxButtonStatus = document.querySelectorAll('#accordion-item-checkbox-status')[index];
   
       checkboxButton.addEventListener('click', () => {
-        handleMarkDoneOrNotDone(checkboxButton, checkboxButtonStatus, notCompletedIcon, completedIcon, loadingSpinnerIcon, index);
+        handleMarkDoneOrNotDone(
+          checkboxButton, checkboxButtonStatus, 
+          notCompletedIcon, completedIcon, 
+          loadingSpinnerIcon, index);
       });
     });
   
-    // ACCORDION FUNCTIONS
+    
+
+    // ACCORDION FUNCTIONS ///
+    // Expand and collapse accordion items
+    // Given an accordion item
+    // When the user clicks on the accordion header
     const setupGuideContainer = document.querySelector('#setupGuide');
     const collapsibleButton = document.querySelector('#collapsibleButton');
     const accordionContainer = document.querySelector('#accordionContainer');
@@ -193,7 +275,12 @@ const app = () => {
       header.addEventListener('click', () => {
         header.classList.toggle('opened');
         const isOpened = header.classList.contains('opened');
-  
+
+    //   - Expand the accordion item
+    //   - Mark the accordion item as open
+    //   - Set the ARIA attributes to true
+    //   - Focus on the checkbox button in the accordion item
+    //   - Enable keyboard navigation within the accordion ite
         if (isOpened) {
           item.classList.add('open');
           item.ariaExpanded = 'true';
@@ -229,6 +316,9 @@ const app = () => {
       });
     });
   
+   //   Collapse the accordion item
+      //  Mark the accordion item as open
+      //  Set the ARIA attributes accordingly
     const closeAccordion = (index1) => {
       accordionItems.forEach((item2, index2) => {
         if (index1 !== index2) {
@@ -268,24 +358,28 @@ const app = () => {
       });
     };
   
+    // Expand the next incomplete step in the accordion
     const expandNextIncompleteStep = (index) => {
+        // Close the current accordion
       closeCurrentAccordion();
+        // Find the next incomplete task and expand its accordion item
       Array.from(checkboxButtons).some((checkboxButton, idx) => {
         if (checkboxButton.ariaPressed === 'false') {
           const accordionItem = accordionItems[idx];
   
           if (accordionItem) {
+             // Access elements within the accordion item
             const image = accordionItem.querySelector('img');
             const link = accordionItem.querySelector('a');
             const accordionButton = accordionItem.querySelector('.accordionButton');
             const accordionButtonTwo = accordionItem.querySelector('.accordionButton-two');
-  
+            // Expands the accordion item
             accordionItem.classList.add('open');
             accordionItem.ariaExpanded = 'true';
             image.classList.remove('hidden');
             link.tabIndex = 0;
             accordionButton.tabIndex = 0;
-  
+           // Handles the case where there's a second button
             if (accordionButtonTwo) {
               accordionButtonTwo.tabIndex = 0;
             }
